@@ -1,21 +1,12 @@
+<%@page import="com.newlecture.web.entity.Notice"%>
 <%@page import="java.sql.Statement"%>
 <%@page import="java.sql.DriverManager"%>
 <%@page import="java.sql.ResultSet"%>
 <%@page import="java.sql.PreparedStatement"%>
 <%@page import="java.sql.Connection"%>
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
-<% 
-String dbID = "chun";
-String dbPwd = "1234";
-String dbURL = "jdbc:mysql://localhost:3306/dbpractice"; // 접속url
-String sql = "SELECT * FROM NOTICE";
-
-Class.forName("com.mysql.cj.jdbc.Driver");
-Connection con= DriverManager.getConnection(dbURL, dbID, dbPwd);
-Statement st = con.createStatement(); 
-ResultSet rs = st.executeQuery(sql);
-%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -188,20 +179,19 @@ ResultSet rs = st.executeQuery(sql);
 					</thead>
 					<tbody>
 					
-					<%while(rs.next()){ %>
-						
-					<tr>
-						<td><%=rs.getInt("ID") %></td>
-						<td class="title indent text-align-left"><a href="detail.jsp?id=<%=rs.getInt("ID")%>"><%=rs.getString("TITLE") %></a></td>
-						<td><%=rs.getString("WRITER_ID") %></td>
-						<td>
-							<%=rs.getDate("REGDATE") %>	
-						</td>
-						<td><%=rs.getInt("HIT") %></td>
-					</tr>
-					<%
-					}
-					%>
+					<c:forEach items="${notice}" var="notice">
+						<tr>
+							<td>${notice.id}</td>
+							<td class="title indent text-align-left"><a href="detail?id=${notice.id}">${notice.title }</a></td>
+							<td>${notice.writerId }</td>
+							<td>
+								<fmt:formatDate pattern="yyyy-MM-dd" value="${notice.regdate}"/>
+							</td>
+							<td>
+								<fmt:formatNumber value= "${notice.hit}"/>
+							</td>
+						</tr>
+					</c:forEach>
 					</tbody>
 				</table>
 			</div>
@@ -212,24 +202,35 @@ ResultSet rs = st.executeQuery(sql);
 			</div>
 
 			<div class="margin-top align-center pager">	
-	<div>
-		
-		
-		<span class="btn btn-prev" onclick="alert('이전 페이지가 없습니다.');">이전</span>
-		
-	</div>
-	<ul class="-list- center">
-		<li><a class="-text- orange bold" href="?p=1&t=&q=" >1</a></li>
+				<c:set var="page" value="${ (param.p == null) ? 1 : param.p}"/>
+				<c:set var="startNum" value="${page - (page -1) % 5}" />
+				<c:set var="lastNum" value="23" />
 				
-	</ul>
-	<div>
-		
-		
-			<span class="btn btn-next" onclick="alert('다음 페이지가 없습니다.');">다음</span>
-		
-	</div>
-	
-			</div>
+				<div>
+					<c:if test="${startNum > 1}">
+						<a class="btn btn-prev" href="?p=${startNum-1}&t=&q=">이전</a>
+					</c:if>
+					<c:if test="${startNum <= 1}">
+						<span class="btn btn-prev" onclick="alert('이전 페이지가 없습니다.');">이전</span>
+					</c:if>
+				</div>
+				
+				<ul class="-list- center">
+					<c:forEach var="i" begin="0" end="4">
+						<li><a class="-text- orange bold" href="?p=${startNum+i}&t=&q=">${i + startNum}</a></li>
+					</c:forEach>
+				</ul>
+								
+				<div>
+				 	<c:if test="${startNum+5 < lastNum}">
+				 		<a class="btn btn-next">다음</a>
+				 	</c:if>
+					<c:if test="${startNum+5 >= lastNum}">
+						<span class="btn btn-next" onclick="alert('다음 페이지가 없습니다.');">다음</span>
+				 	</c:if>
+				</div>
+				
+			</div> 	
 		</main>
 		
 			
@@ -273,9 +274,3 @@ ResultSet rs = st.executeQuery(sql);
     </body>
     
     </html>
-    
-    <%
-    	rs.close();
-        st.close();
-    	con.close();
-    %>

@@ -1,3 +1,4 @@
+<%@page import="java.util.Date"%>
 <%@page import="java.sql.Statement"%>
 <%@page import="java.sql.DriverManager"%>
 <%@page import="java.sql.ResultSet"%>
@@ -5,21 +6,10 @@
 <%@page import="java.sql.Connection"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-  <% 
-String dbID = "chun";
-String dbPwd = "1234";
-String dbURL = "jdbc:mysql://localhost:3306/dbpractice"; // 접속url
-String sql = "SELECT * FROM NOTICE WHERE ID = ?";
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
-Class.forName("com.mysql.cj.jdbc.Driver");
-Connection con= DriverManager.getConnection(dbURL, dbID, dbPwd);
-PreparedStatement pstmt = con.prepareStatement(sql);
-int id = Integer.parseInt(request.getParameter("id"));
-pstmt.setInt(1, id);
-ResultSet rs = pstmt.executeQuery();
-
-rs.next();
-%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -162,34 +152,49 @@ rs.next();
 				<div class="margin-top first">
 						<h3 class="hidden">공지사항 내용</h3>
 						<table class="table">
-							<tbody>
-								<tr>
-									<th>제목</th>
-									    <td class="text-align-left text-indent text-strong text-orange" colspan="3"><%= rs.getString("TITLE") %></td>
-									</tr>
-								<tr>
-								    <th>작성일</th>
-								    <td class="text-align-left text-indent" colspan="3"><%= rs.getDate("REGDATE") %></td>
-								</tr>
-								<tr>
-								    <th>작성자</th>
-								    <td><%= rs.getString("WRITER_ID") %></td>
-								    <th>조회수</th>
-								    <td><%= rs.getInt("HIT") %></td>
-								</tr>
-								<tr>
-								    <th>첨부파일</th>
-								    <td colspan="3"><%= rs.getString("FILES") %></td>
-								</tr>
-								<tr class="content">
-								    <td colspan="4"><%= rs.getString("CONTENT") %></td>
-								</tr>
-								</tbody>
+							 <tbody>
+						        <tr>
+						            <th>제목</th>
+						            <td class="text-align-left text-indent text-strong text-orange" colspan="3">${notice.title }</td>
+						        </tr>
+						        
+						        <tr>
+						            <th>작성일</th>
+						            <td class="text-align-left text-indent" colspan="3">
+										<fmt:formatDate pattern="yyyy-MM-dd hh:mm:ss" value="${notice.regdate}"/>
+									</td> 	
+						        </tr>
+						        
+						        <tr>
+						            <th>작성자</th>
+						            <td>${notice.writerId} </td>
+						            <th>조회수</th>
+						            <td>
+						            	<fmt:formatNumber value= "${notice.hit}"/>
+						            </td>
+						        </tr>
+						        
+						        <tr>
+						            <th>첨부파일</th>
+					            	<td colspan="3" style="text-align: left">
+							            <c:forTokens var="fileName" items="${notice.files}" delims="," varStatus="st">
+							           		<a href="${fileName}">${fn:toUpperCase(fileName)}</a>
+							           		<c:if test="${!st.last}">
+											/
+											</c:if>
+							           	</c:forTokens>
+						            </td>
+						        </tr>
+						        
+						        <tr class="content">
+						            <td colspan="4">${notice.content}</td>
+						        </tr>
+						    </tbody>
 						</table>
 					</div>
 					
 					<div class="margin-top text-align-center">
-						<a class="btn btn-list" href="list.html">목록</a>
+						<a class="btn btn-list" href="/notice/list">목록</a>
 					</div>
 					
 					<div class="margin-top">
@@ -205,8 +210,6 @@ rs.next();
 									<th>이전글</th>
 									<td colspan="3"  class="text-align-left text-indent"><a class="text-blue text-strong" href="">스프링 DI 예제 코드</a></td>
 								</tr>
-								
-								
 							</tbody>
 						</table>
 					</div>			
