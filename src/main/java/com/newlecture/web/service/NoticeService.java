@@ -12,7 +12,7 @@ public class NoticeService {
 	public List<Notice> getNoticeList(int page) {
 		return getNoticeList("title", "", page);
 	}
-
+  
 	public List<Notice> getNoticeList(String field, String query, int page) {
 		String sql = "SELECT * FROM NOTICE ORDER BY REGDATE DESC LIMIT ?, ?";
 		return null;
