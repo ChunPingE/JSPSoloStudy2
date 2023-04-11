@@ -1,7 +1,6 @@
 package com.newlecture.web;
 
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
