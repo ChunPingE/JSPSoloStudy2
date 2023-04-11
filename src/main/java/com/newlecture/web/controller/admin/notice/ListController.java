@@ -10,7 +10,7 @@ import javax.servlet.http.*;
 import com.newlecture.web.entity.*;
 import com.newlecture.web.service.*;
 
-@WebServlet("/admin/notice/list")
+@WebServlet("/admin/board/notice/list")
 public class ListController extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -57,7 +57,14 @@ public class ListController extends HttpServlet {
 		case "일괄공개":
 			break;
 		case "일괄삭제":
+			NoticeService service = new NoticeService();
+			int[] ids = new int[delIds.length];
+			for (int i = 0; i < delIds.length; i++) {
+				ids[i] = Integer.parseInt(delIds[i]);
+			}
+			int result = service.deleteNoticeAll(ids);
 			break;
 		}
+		response.sendRedirect("list");
 	}
 }

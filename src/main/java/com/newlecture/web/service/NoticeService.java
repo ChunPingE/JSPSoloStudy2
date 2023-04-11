@@ -68,6 +68,7 @@ public class NoticeService {
 				notice.setRegdate(rs.getDate("REGDATE"));
 				notice.setHit(rs.getInt("HIT"));
 				notice.setCmtCount(rs.getInt("CMT_COUNT"));
+				notice.setPub(rs.getBoolean("PUB"));
 				list.add(notice);
 			}
 
@@ -127,6 +128,7 @@ public class NoticeService {
 				notice.setTitle(rs.getString("TITLE"));
 				notice.setRegdate(rs.getDate("REGDATE"));
 				notice.setHit(rs.getInt("HIT"));
+				notice.setPub(rs.getBoolean("PUB"));
 			}
 
 			rs.close();
@@ -157,6 +159,7 @@ public class NoticeService {
 				notice.setTitle(rs.getString("TITLE"));
 				notice.setRegdate(rs.getDate("REGDATE"));
 				notice.setHit(rs.getInt("HIT"));
+				notice.setPub(rs.getBoolean("PUB"));
 			}
 
 			rs.close();
@@ -187,6 +190,7 @@ public class NoticeService {
 				notice.setTitle(rs.getString("TITLE"));
 				notice.setRegdate(rs.getDate("REGDATE"));
 				notice.setHit(rs.getInt("HIT"));
+				notice.setPub(rs.getBoolean("PUB"));
 			}
 
 			rs.close();
@@ -197,5 +201,33 @@ public class NoticeService {
 			e.printStackTrace();
 		}
 		return notice;
+	}
+
+	public int deleteNoticeAll(int[] ids) {
+		int result = 0;
+		String params = "";
+
+		for (int i = 0; i < ids.length; i++) {
+			params += ids[i];
+
+			if (i < ids.length - 1) {
+				params += ",";
+			}
+		}
+
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			Connection con = DriverManager.getConnection(dbURL, dbID, dbPwd);
+
+			String sql = "DELETE FROM NOTICE WHERE ID IN (" + params + ")";
+			PreparedStatement pstmt = con.prepareStatement(sql);
+			result = pstmt.executeUpdate();
+
+			pstmt.close();
+			con.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
 	}
 }
