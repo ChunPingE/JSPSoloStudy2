@@ -19,7 +19,26 @@ public class NoticeService {
 	}
 
 	public int insertNotice(Notice notice) {
-		return 0;
+		int result = 0;
+
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			Connection con = DriverManager.getConnection(dbURL, dbID, dbPwd);
+
+			String sql = "INSERT INTO NOTICE(TITLE, CONTENT, WRITER_ID, PUB) VALUES(?,?,?,?)";
+			PreparedStatement pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, notice.getTitle());
+			pstmt.setString(2, notice.getContent());
+			pstmt.setString(3, notice.getWriterId());
+			pstmt.setBoolean(4, notice.getPub());
+			result = pstmt.executeUpdate();
+
+			pstmt.close();
+			con.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
 	}
 
 	public int deleteNotice(int id) {

@@ -7,7 +7,12 @@ import javax.servlet.annotation.*;
 import javax.servlet.http.*;
 
 import com.newlecture.web.entity.*;
+import com.newlecture.web.service.*;
 
+@MultipartConfig(
+		fileSizeThreshold=1024*1024,
+		maxFileSize=1024*1024*50,
+		maxRequestSize=1024*1024*50*5)
 @WebServlet("/admin/board/notice/reg")
 public class RegController extends HttpServlet {
 	@Override
@@ -25,6 +30,27 @@ public class RegController extends HttpServlet {
 		String content = request.getParameter("content");
 		String isOpen = request.getParameter("open");
 		
+		Part filePart = request.getPart("file");
+		filePart.getInputStream();
+		
+		//"/uploard/
+		
+		String realPath = request.getServletContext().getRealPath("/upload");
+		
+		boolean pub = false;
+		if(isOpen != null) {
+			pub = true;
+		}
+		
 		Notice notice = new Notice();
+		notice.setTitle(title);
+		notice.setContent(content);
+		notice.setPub(pub);
+		notice.setWriterId("newlec");
+		
+		NoticeService service = new NoticeService();
+		service.insertNotice(notice);
+		
+		response.sendRedirect("list");
 	}
 }
