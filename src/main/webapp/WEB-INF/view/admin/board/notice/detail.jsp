@@ -70,8 +70,6 @@
                         <ul>
                             <li><a href="/index.html">HOME</a></li>
 
-
-
                             <li>
                                 <form action="/logout" method="post">
                                     <input type="hidden" name="" value="" />
@@ -136,9 +134,6 @@
             </aside>
             <!-- --------------------------- main --------------------------------------- -->
 
-
-
-
             <main>
                 <h2 class="main title">공지사항</h2>
 
@@ -169,13 +164,13 @@
                                 <th>작성자</th>
                                 <td>${notice.writerId}</td>
                                 <th>조회수</th>
-                                <fmt:formatNumber value= "${notice.hit}"/>
+                                <td><fmt:formatNumber value= "${notice.hit}"/></td>
                             </tr>
                            	<tr>
 					            <th>첨부파일</th>
 				            	<td colspan="3" style="text-align: left">
 						            <c:forTokens var="fileName" items="${notice.files}" delims="," varStatus="st">
-						           		<a href="${fileName}">${fn:toUpperCase(fileName)}</a>
+						           		<a download href="/upload/${fileName}" >${fn:toUpperCase(fileName)}</a>
 						           		<c:if test="${!st.last}">
 										/
 										</c:if>

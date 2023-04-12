@@ -174,6 +174,10 @@
 						<tbody>
 
 							<c:forEach items="${notice}" var="notice">
+									<c:set var="open" value=""/>
+									<c:if test="${notice.pub == true}">
+										<c:set var="open" value="checked"/>
+									</c:if>
 									<tr>
 										<td>${notice.id}</td>
 										<td class="title indent text-align-left"><a href="detail?id=${notice.id}">${notice.title}</a><span>[${notice.cmtCount}]</span></td>
@@ -184,7 +188,7 @@
 										<td>
 											<fmt:formatNumber value= "${notice.hit}"/>
 										</td>
-										<td><input type="checkbox" name="open-id" value="${notice.id }"></td>
+										<td><input type="checkbox" name="open-id" ${open} value="${notice.id }"></td>
 										<td><input type="checkbox" name="del-id" value="${notice.id }"></td>
 									</tr>
 								</c:forEach>
@@ -211,6 +215,11 @@
 			</div>
 
 			<div class="text-align-right margin-top">
+				<c:set var="ids" value=""/>
+				<c:forEach items="${notice}" var="notice">
+					<c:set var="ids" value="${ids} ${notice.id}"/>
+				</c:forEach>
+				<input type="hidden" name="ids" value="${ids}"/>
 				<input type="submit" class="btn-text btn-default" name="cmd" value="일괄공개">
 				<input type="submit" class="btn-text btn-default" name="cmd" value="일괄삭제">
 				<a class="btn-text btn-default" href="reg">글쓰기</a>				

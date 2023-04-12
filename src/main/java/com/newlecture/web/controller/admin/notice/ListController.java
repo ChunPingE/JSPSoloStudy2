@@ -51,18 +51,31 @@ public class ListController extends HttpServlet {
 			throws ServletException, IOException {
 		String[] openIds = request.getParameterValues("open-id");
 		String[] delIds = request.getParameterValues("del-id");
-
 		String cmd = request.getParameter("cmd");
+		String ids_ = request.getParameter("ids");
+		String[] ids = ids_.split(" ");
+		
+		NoticeService service = new NoticeService();
+		
 		switch (cmd) {
 		case "일괄공개":
+			List<String> oids = Arrays.asList(openIds);
+			
+			for (int i = 0; i < ids.length; i++) {
+				if(oids.contains(ids[i])) {
+					pub -> 1
+					}else {
+					pub -> 0;
+					}
+			service.pubNoitceList(openIds); //update notice set pub = 1 where id in(..);
+			service.closeNoticeList(clsIds); //update notice set pub = 0 where id in(..);
 			break;
 		case "일괄삭제":
-			NoticeService service = new NoticeService();
-			int[] ids = new int[delIds.length];
+			int[] ids1 = new int[delIds.length];
 			for (int i = 0; i < delIds.length; i++) {
-				ids[i] = Integer.parseInt(delIds[i]);
+				ids1[i] = Integer.parseInt(delIds[i]);
 			}
-			int result = service.deleteNoticeAll(ids);
+			int result = service.deleteNoticeAll(ids1);
 			break;
 		}
 		response.sendRedirect("list");

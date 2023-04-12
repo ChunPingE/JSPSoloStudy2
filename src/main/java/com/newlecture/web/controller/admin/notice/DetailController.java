@@ -20,6 +20,6 @@ public class DetailController extends HttpServlet {
 		Notice notice = service.getNotice(id);
 		
 		request.setAttribute("notice", notice);
-		request.getRequestDispatcher("/WEB-INF/view/notice/detail.jsp").forward(request, response);
+		request.getRequestDispatcher("/WEB-INF/view/admin/board/notice/detail.jsp").forward(request, response);
 	}
 }

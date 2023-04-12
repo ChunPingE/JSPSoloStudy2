@@ -25,12 +25,13 @@ public class NoticeService {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			Connection con = DriverManager.getConnection(dbURL, dbID, dbPwd);
 
-			String sql = "INSERT INTO NOTICE(TITLE, CONTENT, WRITER_ID, PUB) VALUES(?,?,?,?)";
+			String sql = "INSERT INTO NOTICE(TITLE, CONTENT, WRITER_ID, FILES, PUB ) VALUES(?,?,?,?,?)";
 			PreparedStatement pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, notice.getTitle());
 			pstmt.setString(2, notice.getContent());
 			pstmt.setString(3, notice.getWriterId());
-			pstmt.setBoolean(4, notice.getPub());
+			pstmt.setString(4, notice.getFiles());
+			pstmt.setBoolean(5, notice.getPub());
 			result = pstmt.executeUpdate();
 
 			pstmt.close();
@@ -72,6 +73,46 @@ public class NoticeService {
 			Connection con = DriverManager.getConnection(dbURL, dbID, dbPwd);
 
 			String sql = "SELECT * FROM NOTICE_VIEW WHERE " + field + " LIKE ? ORDER BY REGDATE DESC LIMIT ?, ?";
+			PreparedStatement pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, "%" + query + "%");
+			pstmt.setInt(2, startNum);
+			pstmt.setInt(3, lastNum);
+
+			ResultSet rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				NoticeView notice = new NoticeView();
+				notice.setId(rs.getInt("ID"));
+				notice.setWriterId(rs.getString("WRITER_ID"));
+				notice.setTitle(rs.getString("TITLE"));
+				notice.setRegdate(rs.getDate("REGDATE"));
+				notice.setHit(rs.getInt("HIT"));
+				notice.setCmtCount(rs.getInt("CMT_COUNT"));
+				notice.setPub(rs.getBoolean("PUB"));
+				list.add(notice);
+			}
+
+			rs.close();
+			pstmt.close();
+			con.close();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+	
+	public List<NoticeView> getNoticeViewPubList(String field, String query, int page) {
+		List<NoticeView> list = new ArrayList<>();
+
+		int startNum = (page - 1) * 10;
+		int lastNum = 10;
+
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			Connection con = DriverManager.getConnection(dbURL, dbID, dbPwd);
+
+			String sql = "SELECT * FROM NOTICE_VIEW WHERE PUB = 1 AND " + field + " LIKE ? ORDER BY REGDATE DESC LIMIT ?, ?";
 			PreparedStatement pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, "%" + query + "%");
 			pstmt.setInt(2, startNum);
@@ -147,6 +188,7 @@ public class NoticeService {
 				notice.setTitle(rs.getString("TITLE"));
 				notice.setRegdate(rs.getDate("REGDATE"));
 				notice.setHit(rs.getInt("HIT"));
+				notice.setFiles(rs.getString("FILES"));
 				notice.setPub(rs.getBoolean("PUB"));
 			}
 
@@ -249,4 +291,6 @@ public class NoticeService {
 		}
 		return result;
 	}
+
+
 }
