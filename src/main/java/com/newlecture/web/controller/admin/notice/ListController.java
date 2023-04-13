@@ -60,15 +60,15 @@ public class ListController extends HttpServlet {
 		switch (cmd) {
 		case "일괄공개":
 			List<String> oids = Arrays.asList(openIds);
+			List<String> cids = new ArrayList(Arrays.asList(ids));
+			cids.removeAll(oids);
 			
-			for (int i = 0; i < ids.length; i++) {
-				if(oids.contains(ids[i])) {
-					pub -> 1
-					}else {
-					pub -> 0;
-					}
-			service.pubNoitceList(openIds); //update notice set pub = 1 where id in(..);
-			service.closeNoticeList(clsIds); //update notice set pub = 0 where id in(..);
+			//Transaction
+			//service.pubNoitceList(openIds); //update notice set pub = 1 where id in(..);
+			//service.closeNoticeList(clsIds); //update notice set pub = 0 where id in(..);
+			
+			service.pubNoitceAll(oids, cids);
+			
 			break;
 		case "일괄삭제":
 			int[] ids1 = new int[delIds.length];
@@ -77,7 +77,5 @@ public class ListController extends HttpServlet {
 			}
 			int result = service.deleteNoticeAll(ids1);
 			break;
-		}
-		response.sendRedirect("list");
-	}
-}
+		}response.sendRedirect("list");
+}}

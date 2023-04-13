@@ -14,8 +14,52 @@ public class NoticeService {
 		return 0;
 	}
 
-	public int pubNoitceAll(int[] ids) {
-		return 0;
+	public int pubNoitceAll(int[] oids, int[] cids) {
+
+		List<String> oidsList = new ArrayList<>();
+		for (int i = 0; i < oids.length; i++) {
+			oidsList.add(String.valueOf(oids[i]));
+		}
+
+		List<String> cidsList = new ArrayList<>();
+		for (int i = 0; i < cids.length; i++) {
+			oidsList.add(String.valueOf(cids[i]));
+		}
+
+		String oidsCSV = String.join(",", oidsList);
+		String cidsCSV = String.join(",", cidsList);
+
+		return pubNoitceAll(oidsCSV, cidsCSV);
+	}
+
+	public int pubNoitceAll(List<String> oids, List<String> cids) {
+
+		String oidsCSV = String.join(",", oids);
+		String cidsCSV = String.join(",", cids);
+		return pubNoitceAll(oidsCSV, cidsCSV);
+	}
+
+	public int pubNoitceAll(String oidsCSV, String cidsCSV) {
+		int result = 0;
+
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			Connection con = DriverManager.getConnection(dbURL, dbID, dbPwd);
+
+			String sqlOpen = String.format("UPDATE NOTICE SET PUB=1 WHERE ID IN (%s)", oidsCSV);
+			PreparedStatement pstmt = con.prepareStatement(sqlOpen);
+			result += pstmt.executeUpdate();
+
+			String sqlClose = "UPDATE NOTICE SET PUB=0 WHERE ID IN (" + cidsCSV + " )";
+			pstmt = con.prepareStatement(sqlClose);
+			result += pstmt.executeUpdate();
+
+			pstmt.close();
+			con.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
 	}
 
 	public int insertNotice(Notice notice) {
@@ -101,7 +145,7 @@ public class NoticeService {
 		}
 		return list;
 	}
-	
+
 	public List<NoticeView> getNoticeViewPubList(String field, String query, int page) {
 		List<NoticeView> list = new ArrayList<>();
 
@@ -112,7 +156,8 @@ public class NoticeService {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			Connection con = DriverManager.getConnection(dbURL, dbID, dbPwd);
 
-			String sql = "SELECT * FROM NOTICE_VIEW WHERE PUB = 1 AND " + field + " LIKE ? ORDER BY REGDATE DESC LIMIT ?, ?";
+			String sql = "SELECT * FROM NOTICE_VIEW WHERE PUB = 1 AND " + field
+					+ " LIKE ? ORDER BY REGDATE DESC LIMIT ?, ?";
 			PreparedStatement pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, "%" + query + "%");
 			pstmt.setInt(2, startNum);
@@ -291,6 +336,5 @@ public class NoticeService {
 		}
 		return result;
 	}
-
 
 }
